@@ -24,6 +24,7 @@ fun LoginScreen(
 
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Success) {
+            kotlinx.coroutines.delay(200) // Wait for DataStore flush
             onLoginSuccess()
         }
     }
