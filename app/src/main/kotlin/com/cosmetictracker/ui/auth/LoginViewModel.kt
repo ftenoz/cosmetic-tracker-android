@@ -17,11 +17,16 @@ class LoginViewModel(
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
-            val result = authRepository.login(email, password)
-            _uiState.value = if (result.isSuccess) {
-                LoginUiState.Success
-            } else {
-                LoginUiState.Error(result.exceptionOrNull()?.message ?: "Login failed")
+            try {
+                val result = authRepository.login(email, password)
+                _uiState.value = if (result.isSuccess) {
+                    LoginUiState.Success
+                } else {
+                    val error = result.exceptionOrNull()
+                    LoginUiState.Error(error?.message ?: "Login failed")
+                }
+            } catch (e: Exception) {
+                _uiState.value = LoginUiState.Error("Network error: ${e.message}")
             }
         }
     }
