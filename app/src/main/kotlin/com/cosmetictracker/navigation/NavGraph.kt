@@ -27,8 +27,13 @@ fun NavGraph(
     navController: NavHostController,
     application: CosmeticTrackerApplication
 ) {
-    val loginViewModel = LoginViewModel(application.authRepository)
-    val productsViewModel = ProductsViewModel(application.productRepository)
+    // Remember ViewModels to survive recomposition
+    val loginViewModel = androidx.lifecycle.viewmodel.compose.viewModel<LoginViewModel> {
+        LoginViewModel(application.authRepository)
+    }
+    val productsViewModel = androidx.lifecycle.viewmodel.compose.viewModel<ProductsViewModel> {
+        ProductsViewModel(application.productRepository)
+    }
 
     // Check if logged in
     val isLoggedIn = runBlocking {
