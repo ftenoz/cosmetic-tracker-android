@@ -65,6 +65,15 @@ fun NavGraph(
             )
         }
 
-        // TODO: Add other screens
+        composable(Screen.Products.route) {
+            com.cosmetictracker.ui.products.ProductsScreen(
+                viewModel = productsViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToAddProduct = { navController.navigate(Screen.AddProduct.route) },
+                onNavigateToEditProduct = { /* TODO */ }
+            )
+        }
+
+        // TODO: Add other screens (AddProduct, EditProduct, Profile)
     }
 }
