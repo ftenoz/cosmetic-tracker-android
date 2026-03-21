@@ -29,6 +29,11 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Load products when dashboard opens
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        viewModel.loadProducts()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
