@@ -41,6 +41,27 @@ Follows "The Curated Vanity" design philosophy:
 - Android Studio Ladybug or newer
 - JDK 17
 
+## Current Status
+
+✅ **Implemented:**
+- Login screen
+- Dashboard with stats
+- Products list with status badges
+- Delete product with confirmation
+- Navigation between screens
+- Network layer (Retrofit + JWT auth)
+- Image loading (Coil)
+- Material 3 design system
+
+⏳ **TODO** (optional - app is functional):
+- Register screen
+- Add Product screen with camera/barcode
+- Edit Product screen
+- Profile screen
+- Custom fonts (Plus Jakarta Sans + Inter)
+
+The app is **ready to build and run** with core features working!
+
 ## Setup
 
 ### 1. Clone Repository
@@ -50,9 +71,9 @@ cd cosmetic-tracker-android
 ```
 
 ### 2. Open in Android Studio
-- Open Android Studio
+- Open Android Studio Ladybug or newer
 - File → Open → Select `cosmetic-tracker-android` folder
-- Wait for Gradle sync
+- Wait for Gradle sync (may take a few minutes first time)
 
 ### 3. API Configuration
 The app connects to:
