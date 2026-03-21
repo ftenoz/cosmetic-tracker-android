@@ -74,6 +74,28 @@ fun NavGraph(
             )
         }
 
-        // TODO: Add other screens (AddProduct, EditProduct, Profile)
+        composable(Screen.AddProduct.route) {
+            com.cosmetictracker.ui.products.AddProductScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onProductAdded = {
+                    navController.popBackStack()
+                    productsViewModel.loadProducts()
+                }
+            )
+        }
+
+        composable(Screen.Profile.route) {
+            com.cosmetictracker.ui.profile.ProfileScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onLogout = {
+                    kotlinx.coroutines.runBlocking {
+                        application.authRepository.logout()
+                    }
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
     }
 }
