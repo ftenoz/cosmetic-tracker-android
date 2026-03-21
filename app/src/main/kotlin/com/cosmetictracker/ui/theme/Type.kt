@@ -2,27 +2,15 @@ package com.cosmetictracker.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.cosmetictracker.R
 
-// Plus Jakarta Sans for display/headlines (editorial voice)
-val PlusJakartaSans = FontFamily(
-    Font(R.font.plus_jakarta_sans_regular, FontWeight.Normal),
-    Font(R.font.plus_jakarta_sans_medium, FontWeight.Medium),
-    Font(R.font.plus_jakarta_sans_semibold, FontWeight.SemiBold),
-    Font(R.font.plus_jakarta_sans_bold, FontWeight.Bold)
-)
-
-// Inter for body/utility (data anchor)
-val Inter = FontFamily(
-    Font(R.font.inter_regular, FontWeight.Normal),
-    Font(R.font.inter_medium, FontWeight.Medium),
-    Font(R.font.inter_semibold, FontWeight.SemiBold),
-    Font(R.font.inter_bold, FontWeight.Bold)
-)
+// Using system fonts for now
+// TODO: Add custom fonts (Plus Jakarta Sans & Inter) to res/font/ folder
+// See FONTS_NEEDED.md for instructions
+val PlusJakartaSans = FontFamily.SansSerif
+val Inter = FontFamily.Default
 
 // Typography based on Stitch design system
 val Typography = Typography(
