@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cosmetictracker.data.model.ProductStats
 import com.cosmetictracker.ui.products.ProductsUiState
@@ -37,27 +38,44 @@ fun DashboardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background)
-            .padding(24.dp)
+            .background(Background) // f9f9ff
+            .padding(horizontal = 24.dp)
     ) {
-        // Header
+        Spacer(modifier = Modifier.height(40.dp)) // Generous top spacing
+
+        // Header - Editorial style
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
-            Text(
-                text = "Welcome back,\n$userName!",
-                style = MaterialTheme.typography.headlineMedium,
-                color = OnBackground
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Welcome back,",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        letterSpacing = 0.01.sp
+                    ),
+                    color = OnSurfaceVariant
+                )
+                Text(
+                    text = userName,
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        letterSpacing = (-0.02).sp
+                    ),
+                    color = OnBackground
+                )
+            }
 
             TextButton(onClick = onNavigateToProfile) {
-                Text("Profile")
+                Text(
+                    "Profile",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Primary
+                )
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         // Stats Cards
         when (val state = uiState) {
@@ -115,19 +133,33 @@ fun DashboardScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Add Product Button
+        // Add Product Button - Gradient pill
         Button(
             onClick = onNavigateToAddProduct,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            shape = RoundedCornerShape(28.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Primary)
+            shape = RoundedCornerShape(percent = 50), // Pill shape
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Primary,
+                contentColor = OnPrimary
+            )
         ) {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Add Product", style = MaterialTheme.typography.titleMedium)
+            Icon(
+                Icons.Default.Add,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                "Add Product",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                )
+            )
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
@@ -136,39 +168,45 @@ fun StatsCards(
     stats: ProductStats,
     onNavigateToProducts: () -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        StatCard(
-            title = "Total Products",
+    // Asymmetric layout - first card large, then two smaller
+    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+        // Large card - Total
+        StatCardLarge(
+            title = "TOTAL PRODUCTS",
             value = stats.total.toString(),
-            emoji = "💄",
-            backgroundColor = SurfaceContainerLowest,
+            subtitle = "in your collection",
             onClick = onNavigateToProducts
         )
 
-        StatCard(
-            title = "Active",
-            value = stats.active.toString(),
-            emoji = "✨",
-            backgroundColor = TertiaryFixed,
-            onClick = onNavigateToProducts
-        )
+        // Two smaller cards
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            StatCardCompact(
+                title = "ACTIVE",
+                value = stats.active.toString(),
+                backgroundColor = TertiaryFixed,
+                modifier = Modifier.weight(1f),
+                onClick = onNavigateToProducts
+            )
 
-        StatCard(
-            title = "Expiring Soon",
-            value = stats.expiringSoon.toString(),
-            emoji = "⚠️",
-            backgroundColor = PrimaryFixed,
-            onClick = onNavigateToProducts
-        )
+            StatCardCompact(
+                title = "EXPIRING",
+                value = stats.expiringSoon.toString(),
+                backgroundColor = PrimaryFixed,
+                modifier = Modifier.weight(1f),
+                onClick = onNavigateToProducts
+            )
+        }
     }
 }
 
 @Composable
-fun StatCard(
+fun StatCardLarge(
     title: String,
     value: String,
-    emoji: String,
-    backgroundColor: androidx.compose.ui.graphics.Color,
+    subtitle: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -176,31 +214,70 @@ fun StatCard(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+        colors = CardDefaults.cardColors(containerColor = SurfaceContainerLowest),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(32.dp)
+                .fillMaxWidth()
         ) {
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = OnSurface
-                )
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.displaySmall,
-                    color = Primary
-                )
-            }
             Text(
-                text = emoji,
-                style = MaterialTheme.typography.displayMedium,
-                textAlign = TextAlign.Center
+                text = title,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    letterSpacing = 0.05.sp,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
+                ),
+                color = OnSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.displayLarge.copy(
+                    letterSpacing = (-0.02).sp
+                ),
+                color = Primary
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = OnSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+fun StatCardCompact(
+    title: String,
+    value: String,
+    backgroundColor: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    letterSpacing = 0.05.sp
+                ),
+                color = OnSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.displayMedium.copy(
+                    letterSpacing = (-0.02).sp
+                ),
+                color = Primary
             )
         }
     }
