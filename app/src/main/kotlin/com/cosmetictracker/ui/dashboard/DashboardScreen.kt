@@ -55,13 +55,56 @@ fun DashboardScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         // Stats Cards
-        when (uiState) {
+        when (val state = uiState) {
             is ProductsUiState.Success -> {
-                val stats = (uiState as ProductsUiState.Success).stats
-                StatsCards(stats = stats, onNavigateToProducts = onNavigateToProducts)
+                StatsCards(stats = state.stats, onNavigateToProducts = onNavigateToProducts)
             }
-            else -> {
-                CircularProgressIndicator()
+            is ProductsUiState.Loading -> {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    repeat(3) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(100.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                            }
+                        }
+                    }
+                }
+            }
+            is ProductsUiState.Error -> {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = ErrorContainer)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Failed to load products",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = OnErrorContainer
+                        )
+                        Text(
+                            text = state.message,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = OnErrorContainer
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextButton(
+                            onClick = { viewModel.loadProducts() }
+                        ) {
+                            Text("Retry")
+                        }
+                    }
+                }
             }
         }
 
