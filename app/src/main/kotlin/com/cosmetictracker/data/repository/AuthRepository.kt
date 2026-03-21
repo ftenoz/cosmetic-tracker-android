@@ -49,14 +49,17 @@ class AuthRepository(
             if (response.isSuccessful && response.body() != null) {
                 val authResponse = response.body()!!
                 android.util.Log.d("AuthRepository", "Login successful, saving token...")
-                tokenManager.saveToken(authResponse.accessToken)
+                val token = authResponse.accessToken
+                android.util.Log.d("AuthRepository", "Token from API: ${token?.take(20) ?: "NULL"}")
+                
+                tokenManager.saveToken(token)
                 tokenManager.saveUserInfo(
                     authResponse.user.id,
                     authResponse.user.email,
                     authResponse.user.firstName,
                     authResponse.user.lastName
                 )
-                android.util.Log.d("AuthRepository", "Token saved: ${authResponse.accessToken.take(20)}...")
+                android.util.Log.d("AuthRepository", "Token saved to DataStore")
                 
                 // Verify token was saved
                 kotlinx.coroutines.delay(100) // Give DataStore time to write
