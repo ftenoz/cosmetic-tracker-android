@@ -249,6 +249,10 @@ fun AddProductScreen(
                 CTButton(
                     text = if (saveLoading) "Saving..." else "Add Product",
                     onClick = {
+                        if (productName.isBlank() || brand.isBlank()) {
+                            android.widget.Toast.makeText(context, "Lütfen ürün adı ve marka giriniz.", android.widget.Toast.LENGTH_SHORT).show()
+                            return@CTButton
+                        }
                         saveLoading = true
                         var imageFile: File? = null
                         if (localImageUri != null) {
@@ -277,12 +281,12 @@ fun AddProductScreen(
                                 if (success) {
                                     onProductAdded()
                                 } else {
-                                    android.widget.Toast.makeText(context, msg ?: "Error saving", android.widget.Toast.LENGTH_SHORT).show()
+                                    android.widget.Toast.makeText(context, msg ?: "Error saving", android.widget.Toast.LENGTH_LONG).show()
                                 }
                             }
                         )
                     },
-                    enabled = !saveLoading && productName.isNotBlank() && brand.isNotBlank()
+                    enabled = !saveLoading
                 )
 
                 TextButton(
