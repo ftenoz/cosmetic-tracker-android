@@ -22,7 +22,8 @@ fun CTTextField(
     isPassword: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     singleLine: Boolean = true,
-    maxLines: Int = 1
+    maxLines: Int = 1,
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     OutlinedTextField(
         value = value,
@@ -34,6 +35,7 @@ fun CTTextField(
         keyboardOptions = keyboardOptions,
         singleLine = singleLine,
         maxLines = maxLines,
+        trailingIcon = trailingIcon,
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedContainerColor = SurfaceContainerLow,

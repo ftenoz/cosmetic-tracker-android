@@ -1,12 +1,19 @@
 package com.cosmetictracker.ui.products
 
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import com.cosmetictracker.ui.components.BarcodeScanner
 import com.cosmetictracker.ui.components.CTButton
 import com.cosmetictracker.ui.components.CTTextField
 
@@ -16,81 +23,124 @@ fun AddProductScreen(
     onNavigateBack: () -> Unit,
     onProductAdded: () -> Unit
 ) {
+    val context = LocalContext.current
     var productName by remember { mutableStateOf("") }
     var brand by remember { mutableStateOf("") }
     var barcode by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Add Product") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
+    var isScanning by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            isScanning = true
+        } else {
+            // Handle permission denial if needed
         }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                text = "Product Information",
-                style = MaterialTheme.typography.titleLarge
-            )
+    }
 
-            CTTextField(
-                value = productName,
-                onValueChange = { productName = it },
-                label = "Product Name",
-                placeholder = "e.g., Fenty Beauty Foundation"
-            )
-
-            CTTextField(
-                value = brand,
-                onValueChange = { brand = it },
-                label = "Brand",
-                placeholder = "e.g., Fenty Beauty"
-            )
-
-            CTTextField(
-                value = barcode,
-                onValueChange = { barcode = it },
-                label = "Barcode (optional)",
-                placeholder = "Scan or enter manually"
-            )
-
-            CTTextField(
-                value = notes,
-                onValueChange = { notes = it },
-                label = "Notes (optional)",
-                placeholder = "Shade, usage notes...",
-                singleLine = false,
-                maxLines = 3
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            CTButton(
-                text = "Add Product",
-                onClick = {
-                    // TODO: Save product
-                    onProductAdded()
-                },
-                enabled = productName.isNotBlank() && brand.isNotBlank()
-            )
-
-            TextButton(
-                onClick = onNavigateBack,
-                modifier = Modifier.fillMaxWidth()
+    if (isScanning) {
+        BarcodeScanner(
+            onBarcodeScanned = { scannedValue ->
+                barcode = scannedValue
+                isScanning = false
+            },
+            onCancel = {
+                isScanning = false
+            }
+        )
+    } else {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Add Product") },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                )
+            }
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Cancel")
+                Text(
+                    text = "Product Information",
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                CTTextField(
+                    value = productName,
+                    onValueChange = { productName = it },
+                    label = "Product Name",
+                    placeholder = "e.g., Fenty Beauty Foundation"
+                )
+
+                CTTextField(
+                    value = brand,
+                    onValueChange = { brand = it },
+                    label = "Brand",
+                    placeholder = "e.g., Fenty Beauty"
+                )
+
+                CTTextField(
+                    value = barcode,
+                    onValueChange = { barcode = it },
+                    label = "Barcode (optional)",
+                    placeholder = "Scan or enter manually",
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            val permissionCheckResult = ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.CAMERA
+                            )
+                            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                                isScanning = true
+                            } else {
+                                permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.CameraAlt,
+                                contentDescription = "Scan Barcode"
+                            )
+                        }
+                    }
+                )
+
+                CTTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = "Notes (optional)",
+                    placeholder = "Shade, usage notes...",
+                    singleLine = false,
+                    maxLines = 3
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                CTButton(
+                    text = "Add Product",
+                    onClick = {
+                        // TODO: Save product
+                        onProductAdded()
+                    },
+                    enabled = productName.isNotBlank() && brand.isNotBlank()
+                )
+
+                TextButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancel")
+                }
             }
         }
     }
