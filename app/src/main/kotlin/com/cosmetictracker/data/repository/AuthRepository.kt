@@ -7,6 +7,7 @@ import com.cosmetictracker.data.model.User
 import com.cosmetictracker.data.remote.ApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 
 class AuthRepository(
     private val api: ApiService,
@@ -84,8 +85,6 @@ class AuthRepository(
     fun getToken(): Flow<String?> = tokenManager.getToken()
     
     fun isLoggedIn(): Flow<Boolean> {
-        return tokenManager.getToken().let { flow ->
-            kotlinx.coroutines.flow.map(flow) { it != null }
-        }
+        return tokenManager.getToken().map { it != null }
     }
 }
