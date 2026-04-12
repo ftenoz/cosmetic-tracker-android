@@ -114,7 +114,7 @@ class ProductsViewModel(
 
                 val createUserProductResult = productRepository.createUserProduct(
                     productId = productId,
-                    purchasedAt = LocalDate.now().toString(),
+                    purchasedAt = null,
                     openedAt = null,
                     notes = notes,
                     imageUrl = finalImageUrl
@@ -124,7 +124,8 @@ class ProductsViewModel(
                     loadProducts()
                     onComplete(true, null)
                 } else {
-                    onComplete(false, "Failed to add product to your collection")
+                    val err = createUserProductResult.exceptionOrNull()?.message
+                    onComplete(false, "Eklenti hatası: $err")
                 }
             } catch (e: Exception) {
                 onComplete(false, e.message)
