@@ -87,4 +87,43 @@ class AuthRepository(
     fun isLoggedIn(): Flow<Boolean> {
         return tokenManager.getToken().map { it != null }
     }
+
+    suspend fun getProfile(): Result<User> {
+        return try {
+            val response = api.getProfile()
+            if (response.isSuccessful && response.body() != null) {
+                val user = response.body()!!
+                tokenManager.saveUserInfo(user.id, user.email, user.firstName, user.lastName)
+                Result.success(user)
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateProfile(
+        firstName: String?,
+        lastName: String?,
+        email: String?
+    ): Result<User> {
+        return try {
+            val request = com.cosmetictracker.data.model.UpdateUserRequest(
+                email = email,
+                firstName = firstName,
+                lastName = lastName
+            )
+            val response = api.updateProfile(request)
+            if (response.isSuccessful && response.body() != null) {
+                val user = response.body()!!
+                tokenManager.saveUserInfo(user.id, user.email, user.firstName, user.lastName)
+                Result.success(user)
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

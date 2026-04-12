@@ -10,15 +10,34 @@ import androidx.compose.ui.unit.dp
 import com.cosmetictracker.ui.components.CTButton
 import com.cosmetictracker.ui.components.CTTextField
 
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.widget.Toast
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    viewModel: ProfileViewModel,
     onNavigateBack: () -> Unit,
     onLogout: () -> Unit
 ) {
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    var firstName by remember(uiState.firstName) { mutableStateOf(uiState.firstName) }
+    var lastName by remember(uiState.lastName) { mutableStateOf(uiState.lastName) }
+    var email by remember(uiState.email) { mutableStateOf(uiState.email) }
+
+    LaunchedEffect(uiState.isSuccess, uiState.error) {
+        if (uiState.isSuccess) {
+            Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+            viewModel.onStateHandled()
+        }
+        if (uiState.error != null) {
+            Toast.makeText(context, uiState.error, Toast.LENGTH_SHORT).show()
+            viewModel.onStateHandled()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -65,8 +84,9 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             CTButton(
-                text = "Save Changes",
-                onClick = { /* TODO */ }
+                text = if (uiState.isLoading) "Saving..." else "Save Changes",
+                onClick = { viewModel.updateProfile(firstName, lastName, email) },
+                enabled = !uiState.isLoading
             )
 
             TextButton(

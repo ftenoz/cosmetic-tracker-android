@@ -12,6 +12,7 @@ import com.cosmetictracker.ui.auth.LoginScreen
 import com.cosmetictracker.ui.auth.LoginViewModel
 import com.cosmetictracker.ui.dashboard.DashboardScreen
 import com.cosmetictracker.ui.products.ProductsViewModel
+import com.cosmetictracker.ui.profile.ProfileViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -34,6 +35,9 @@ fun NavGraph(
     }
     val productsViewModel = androidx.lifecycle.viewmodel.compose.viewModel<ProductsViewModel> {
         ProductsViewModel(application.productRepository)
+    }
+    val profileViewModel = androidx.lifecycle.viewmodel.compose.viewModel<ProfileViewModel> {
+        ProfileViewModel(application.authRepository)
     }
 
     // Check if logged in
@@ -92,6 +96,7 @@ fun NavGraph(
 
         composable(Screen.Profile.route) {
             com.cosmetictracker.ui.profile.ProfileScreen(
+                viewModel = profileViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onLogout = {
                     kotlinx.coroutines.runBlocking {
