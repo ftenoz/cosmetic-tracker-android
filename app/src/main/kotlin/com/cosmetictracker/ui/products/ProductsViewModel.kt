@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.cosmetictracker.data.model.ExpiryStatus
 import com.cosmetictracker.data.model.ProductStats
 import com.cosmetictracker.data.model.UserProduct
+import com.cosmetictracker.data.model.Category
 import com.cosmetictracker.data.repository.ProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.io.File
 
 class ProductsViewModel(
     private val productRepository: ProductRepository
@@ -20,8 +22,21 @@ class ProductsViewModel(
     private val _uiState = MutableStateFlow<ProductsUiState>(ProductsUiState.Loading)
     val uiState: StateFlow<ProductsUiState> = _uiState
 
+    private val _categories = MutableStateFlow<List<Category>>(emptyList())
+    val categories: StateFlow<List<Category>> = _categories
+
     init {
         loadProducts()
+        loadCategories()
+    }
+
+    private fun loadCategories() {
+        viewModelScope.launch {
+            val result = productRepository.getCategories()
+            if (result.isSuccess) {
+                _categories.value = result.getOrNull() ?: emptyList()
+            }
+        }
     }
 
     fun loadProducts() {
@@ -41,6 +56,79 @@ class ProductsViewModel(
         viewModelScope.launch {
             productRepository.deleteUserProduct(productId)
             loadProducts()
+        }
+    }
+    
+    fun addProduct(
+        name: String,
+        brandName: String,
+        categoryId: String,
+        barcode: String?,
+        notes: String?,
+        imageFile: File?,
+        obfImageUrl: String?,
+        onComplete: (Boolean, String?) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                var finalImageUrl = obfImageUrl
+                if (imageFile != null) {
+                    val uploadResult = productRepository.uploadImage(imageFile)
+                    if (uploadResult.isSuccess) {
+                        finalImageUrl = uploadResult.getOrNull()
+                    }
+                }
+
+                val brandsResult = productRepository.getBrands()
+                var brandId = ""
+                if (brandsResult.isSuccess) {
+                    val existing = brandsResult.getOrNull()?.find { it.name.equals(brandName, ignoreCase = true) }
+                    brandId = existing?.id ?: ""
+                }
+                
+                if (brandId.isEmpty()) {
+                    val createBrandResult = productRepository.createBrand(brandName)
+                    if (createBrandResult.isSuccess) {
+                        brandId = createBrandResult.getOrNull()?.id ?: ""
+                    } else {
+                        onComplete(false, "Failed to create brand")
+                        return@launch
+                    }
+                }
+
+                val createProductResult = productRepository.createProduct(
+                    name = name,
+                    brandId = brandId,
+                    categoryId = categoryId,
+                    barcode = barcode?.takeIf { it.isNotBlank() },
+                    description = notes,
+                    paoMonths = 12
+                )
+                
+                if (createProductResult.isFailure) {
+                    onComplete(false, "Failed to create product in database")
+                    return@launch
+                }
+
+                val productId = createProductResult.getOrNull()!!.id
+
+                val createUserProductResult = productRepository.createUserProduct(
+                    productId = productId,
+                    purchasedAt = LocalDate.now().toString(),
+                    openedAt = null,
+                    notes = notes,
+                    imageUrl = finalImageUrl
+                )
+
+                if (createUserProductResult.isSuccess) {
+                    loadProducts()
+                    onComplete(true, null)
+                } else {
+                    onComplete(false, "Failed to add product to your collection")
+                }
+            } catch (e: Exception) {
+                onComplete(false, e.message)
+            }
         }
     }
 
