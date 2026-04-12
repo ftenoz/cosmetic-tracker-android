@@ -72,6 +72,11 @@ class ProductsViewModel(
         }
         return ProductStats(total, active, expiringSoon)
     }
+
+    suspend fun getProductDetailsFromBarcode(barcode: String): com.cosmetictracker.data.remote.ObfProductData? {
+        val result = productRepository.getProductByBarcode(barcode)
+        return result.getOrNull()
+    }
 }
 
 sealed class ProductsUiState {

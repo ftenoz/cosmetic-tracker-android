@@ -17,13 +17,17 @@ import com.cosmetictracker.ui.components.BarcodeScanner
 import com.cosmetictracker.ui.components.CTButton
 import com.cosmetictracker.ui.components.CTTextField
 
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductScreen(
+    viewModel: ProductsViewModel,
     onNavigateBack: () -> Unit,
     onProductAdded: () -> Unit
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     var productName by remember { mutableStateOf("") }
     var brand by remember { mutableStateOf("") }
     var barcode by remember { mutableStateOf("") }
@@ -46,6 +50,20 @@ fun AddProductScreen(
             onBarcodeScanned = { scannedValue ->
                 barcode = scannedValue
                 isScanning = false
+                
+                coroutineScope.launch {
+                    val product = viewModel.getProductDetailsFromBarcode(scannedValue)
+                    if (product != null) {
+                        if (!product.product_name.isNullOrBlank()) {
+                            productName = product.product_name
+                        }
+                        if (!product.brands.isNullOrBlank()) {
+                            brand = product.brands
+                        }
+                    } else {
+                        android.widget.Toast.makeText(context, "Ürün bulunamadı.", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
             },
             onCancel = {
                 isScanning = false

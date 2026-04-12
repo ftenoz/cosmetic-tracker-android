@@ -7,7 +7,13 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
-class ProductRepository(private val api: ApiService) {
+import com.cosmetictracker.data.remote.OpenBeautyFactsService
+import com.cosmetictracker.data.remote.ObfProductData
+
+class ProductRepository(
+    private val api: ApiService,
+    private val obfApi: OpenBeautyFactsService? = null
+) {
     
     suspend fun getBrands(): Result<List<Brand>> {
         return try {
@@ -151,6 +157,25 @@ class ProductRepository(private val api: ApiService) {
             val response = api.uploadImage(multipartBody)
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!.url)
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getProductByBarcode(barcode: String): Result<ObfProductData> {
+        if (obfApi == null) return Result.failure(Exception("OBF API not initialized"))
+        return try {
+            val response = obfApi.getProductByBarcode(barcode)
+            if (response.isSuccessful && response.body() != null) {
+                val obfResponse = response.body()!!
+                if (obfResponse.status == 1 && obfResponse.product != null) {
+                    Result.success(obfResponse.product)
+                } else {
+                    Result.failure(Exception("Product not found for barcode"))
+                }
             } else {
                 Result.failure(Exception(response.message()))
             }

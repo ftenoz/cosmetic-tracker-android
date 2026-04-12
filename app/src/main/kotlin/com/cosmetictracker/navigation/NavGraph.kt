@@ -85,6 +85,7 @@ fun NavGraph(
 
         composable(Screen.AddProduct.route) {
             com.cosmetictracker.ui.products.AddProductScreen(
+                viewModel = productsViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onProductAdded = {
                     navController.popBackStack()

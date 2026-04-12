@@ -26,6 +26,7 @@ class CosmeticTrackerApplication : Application() {
         val apiService = RetrofitClient.create(tokenManager)
         
         authRepository = AuthRepository(apiService, tokenManager)
-        productRepository = ProductRepository(apiService)
+        val obfApiService = RetrofitClient.createObfApi()
+        productRepository = ProductRepository(apiService, obfApiService)
     }
 }
