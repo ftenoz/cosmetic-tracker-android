@@ -25,9 +25,22 @@ class ProductsViewModel(
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories
 
+    private val _brands = MutableStateFlow<List<com.cosmetictracker.data.model.Brand>>(emptyList())
+    val brands: StateFlow<List<com.cosmetictracker.data.model.Brand>> = _brands
+
     init {
         loadProducts()
         loadCategories()
+        loadBrands()
+    }
+
+    private fun loadBrands() {
+        viewModelScope.launch {
+            val result = productRepository.getBrands()
+            if (result.isSuccess) {
+                _brands.value = result.getOrNull() ?: emptyList()
+            }
+        }
     }
 
     private fun loadCategories() {
@@ -58,13 +71,17 @@ class ProductsViewModel(
             loadProducts()
         }
     }
-    
+
     fun addProduct(
         name: String,
         brandName: String,
         categoryId: String,
         barcode: String?,
         notes: String?,
+        description: String?,
+        paoMonths: Int?,
+        purchasedAt: String?,
+        openedAt: String?,
         imageFile: File?,
         obfImageUrl: String?,
         onComplete: (Boolean, String?) -> Unit
@@ -101,8 +118,8 @@ class ProductsViewModel(
                     brandId = brandId,
                     categoryId = categoryId,
                     barcode = barcode?.takeIf { it.isNotBlank() },
-                    description = notes,
-                    paoMonths = 12
+                    description = description,
+                    paoMonths = paoMonths
                 )
                 
                 if (createProductResult.isFailure) {
@@ -114,8 +131,8 @@ class ProductsViewModel(
 
                 val createUserProductResult = productRepository.createUserProduct(
                     productId = productId,
-                    purchasedAt = null,
-                    openedAt = null,
+                    purchasedAt = purchasedAt,
+                    openedAt = openedAt,
                     notes = notes
                 )
 
@@ -124,8 +141,8 @@ class ProductsViewModel(
                     if (finalImageUrl != null) {
                         productRepository.updateUserProduct(
                             id = userProductId,
-                            purchasedAt = null,
-                            openedAt = null,
+                            purchasedAt = purchasedAt,
+                            openedAt = openedAt,
                             notes = notes,
                             imageUrl = finalImageUrl
                         )
