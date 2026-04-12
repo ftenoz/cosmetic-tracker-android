@@ -116,11 +116,20 @@ class ProductsViewModel(
                     productId = productId,
                     purchasedAt = null,
                     openedAt = null,
-                    notes = notes,
-                    imageUrl = finalImageUrl
+                    notes = notes
                 )
 
                 if (createUserProductResult.isSuccess) {
+                    val userProductId = createUserProductResult.getOrNull()!!.id
+                    if (finalImageUrl != null) {
+                        productRepository.updateUserProduct(
+                            id = userProductId,
+                            purchasedAt = null,
+                            openedAt = null,
+                            notes = notes,
+                            imageUrl = finalImageUrl
+                        )
+                    }
                     loadProducts()
                     onComplete(true, null)
                 } else {

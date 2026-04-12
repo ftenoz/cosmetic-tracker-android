@@ -100,8 +100,7 @@ data class CreateUserProductRequest(
     val productId: String,
     val purchasedAt: String? = null,
     val openedAt: String? = null,
-    val notes: String? = null,
-    val imageUrl: String? = null
+    val notes: String? = null
 )
 
 data class UpdateUserProductRequest(

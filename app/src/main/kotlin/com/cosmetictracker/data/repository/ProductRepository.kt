@@ -94,12 +94,11 @@ class ProductRepository(
         productId: String,
         purchasedAt: String?,
         openedAt: String?,
-        notes: String?,
-        imageUrl: String?
+        notes: String?
     ): Result<UserProduct> {
         return try {
             val response = api.createUserProduct(
-                CreateUserProductRequest(productId, purchasedAt, openedAt, notes, imageUrl)
+                CreateUserProductRequest(productId, purchasedAt, openedAt, notes)
             )
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
