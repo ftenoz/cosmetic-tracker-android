@@ -82,7 +82,8 @@ class ProductRepository(
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
-                Result.failure(Exception(response.message()))
+                val errorBody = response.errorBody()?.string() ?: response.message()
+                Result.failure(Exception(errorBody))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -103,7 +104,8 @@ class ProductRepository(
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
-                Result.failure(Exception(response.message()))
+                val errorBody = response.errorBody()?.string() ?: response.message()
+                Result.failure(Exception(errorBody))
             }
         } catch (e: Exception) {
             Result.failure(e)
