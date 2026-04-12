@@ -45,9 +45,8 @@ fun NavGraph(
         application.tokenManager.getToken().first() != null
     }
 
-    val userName = runBlocking {
-        application.tokenManager.getUserFirstName().first() ?: "User"
-    }
+    val userNameState by application.tokenManager.getUserFirstName().collectAsStateWithLifecycle(initialValue = null)
+    val userName = userNameState ?: "User"
 
     NavHost(
         navController = navController,
