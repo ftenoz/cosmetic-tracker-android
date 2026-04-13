@@ -159,6 +159,46 @@ class ProductsViewModel(
         }
     }
 
+    fun updateProduct(
+        id: String,
+        purchasedAt: String?,
+        openedAt: String?,
+        notes: String?,
+        imageFile: File?,
+        existingImageUrl: String?,
+        onComplete: (Boolean, String?) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                var finalImageUrl = existingImageUrl
+                if (imageFile != null) {
+                    val uploadResult = productRepository.uploadImage(imageFile)
+                    if (uploadResult.isSuccess) {
+                        finalImageUrl = uploadResult.getOrNull()
+                    }
+                }
+                
+                val updateResult = productRepository.updateUserProduct(
+                    id = id,
+                    purchasedAt = purchasedAt,
+                    openedAt = openedAt,
+                    notes = notes,
+                    imageUrl = finalImageUrl
+                )
+                
+                if (updateResult.isSuccess) {
+                    loadProducts()
+                    onComplete(true, null)
+                } else {
+                    val err = updateResult.exceptionOrNull()?.message
+                    onComplete(false, "Errot updating: $err")
+                }
+            } catch (e: Exception) {
+                onComplete(false, e.message)
+            }
+        }
+    }
+
     fun getExpiryStatus(userProduct: UserProduct): ExpiryStatus {
         val openedAt = userProduct.openedAt ?: return ExpiryStatus.FRESH
         
