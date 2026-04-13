@@ -2,52 +2,58 @@ package com.cosmetictracker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Primary (Rose/Blush - from Stitch design system)
-val Primary = Color(0xFF994151)
-val OnPrimary = Color(0xFFFFFFFF)
-val PrimaryContainer = Color(0xFFDD7787)
-val OnPrimaryContainer = Color(0xFF3F0012)
+// ================================
+// Vela Vanity (Light Mode)
+// ================================
+val VanityPrimary = Color(0xFF5E5E61)
+val VanityPrimaryContainer = Color(0xFF525256)
+val VanityOnPrimary = Color(0xFFF8F7FB)
 
-// Secondary (Warm tones)
-val Secondary = Color(0xFFEF6527)
-val OnSecondary = Color(0xFFFFFFFF)
-val SecondaryContainer = Color(0xFFEBE0E3)
-val OnSecondaryContainer = Color(0xFF6A6265)
+val VanitySurface = Color(0xFFFFFCF7)
+val VanitySurfaceContainer = Color(0xFFF6F4EC)
+val VanitySurfaceContainerLow = Color(0xFFFCF9F3)
+val VanitySurfaceContainerLowest = Color(0xFFFFFFFF)
+val VanitySurfaceVariant = Color(0xFFEAE9DE)
 
-// Tertiary (Sage/Fresh green)
-val Tertiary = Color(0xFF50946B)
-val OnTertiary = Color(0xFFFFFFFF)
-val TertiaryFixed = Color(0xFFD7E7D3)
-val OnTertiaryFixed = Color(0xFF111F12)
+val VanityOnSurface = Color(0xFF383831)
+val VanityOnSurfaceVariant = Color(0xFF64655D)
 
-// Error (Expired state)
-val Error = Color(0xFFEF4444)
-val OnError = Color(0xFFFFFFFF)
-val ErrorContainer = Color(0xFFFFDAD6)
-val OnErrorContainer = Color(0xFF93000A)
+val VanityOutlineVariant = Color(0xFFBABAB0)
 
-// Status Colors (matching web app)
-val StatusFresh = Color(0xFF22C55E)
-val StatusExpiring = Color(0xFFF59E0B)
-val StatusExpired = Color(0xFFEF4444)
+val VanitySecondary = Color(0xFF716248)
+val VanitySecondaryContainer = Color(0xFFF4E0BF)
+val VanityOnSecondaryContainer = Color(0xFF5D5037)
 
-// Surface hierarchy (The Curated Vanity system)
-val Surface = Color(0xFFF9F9FF)
-val OnSurface = Color(0xFF121C2C)
-val SurfaceContainerLowest = Color(0xFFFFFFFF)
-val SurfaceContainerLow = Color(0xFFF0F3FF)
-val SurfaceContainerHighest = Color(0xFFD9E3F9)
-val SurfaceVariant = Color(0xFFD9E3F9)
-val OnSurfaceVariant = Color(0xFF49454F)
+val VanityTertiary = Color(0xFF8F9386) // Soft Sage fallback
+val VanityOnTertiary = Color(0xFFFFFFFF)
 
-// Outline
-val Outline = Color(0xFF79747E)
-val OutlineVariant = Color(0xFFDAC0C2)
+val VanityError = Color(0xFFB3261E)
+val VanityOnError = Color(0xFFFFFFFF)
 
-// Background
-val Background = Color(0xFFF9F9FF)
-val OnBackground = Color(0xFF121C2C)
+// ================================
+// Vela Ethereal Night (Dark Mode)
+// ================================
+val EtherealPrimary = Color(0xFFE8D4B3)
+val EtherealPrimaryContainer = Color(0xFFCBB899)
+val EtherealOnPrimary = Color(0xFF3A2F18)
 
-// Primary Fixed (for Expiring badge)
-val PrimaryFixed = Color(0xFFFFD9DD)
-val OnPrimaryFixed = Color(0xFF400012)
+val EtherealSurface = Color(0xFF131313)
+val EtherealSurfaceContainer = Color(0xFF202020)
+val EtherealSurfaceContainerLow = Color(0xFF1B1B1C)
+val EtherealSurfaceContainerLowest = Color(0xFF0E0E0E)
+val EtherealSurfaceVariant = Color(0xFF353535) // Highest mapping to surface variant overlay
+
+val EtherealOnSurface = Color(0xFFE5E2E1)
+val EtherealOnSurfaceVariant = Color(0xFFCFC5B9)
+
+val EtherealOutlineVariant = Color(0xFF4C463D)
+
+val EtherealSecondary = Color(0xFFCBB899)
+val EtherealSecondaryContainer = Color(0xFF4D4844)
+val EtherealOnSecondaryContainer = Color(0xFFBEB7B1)
+
+val EtherealTertiary = Color(0xFFE1D4D0)
+val EtherealOnTertiary = Color(0xFF131313)
+
+val EtherealError = Color(0xFFFFB4AB)
+val EtherealOnError = Color(0xFF690005)
