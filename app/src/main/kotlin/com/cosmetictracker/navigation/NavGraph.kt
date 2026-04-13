@@ -90,7 +90,6 @@ fun NavGraph(
                 viewModel = productsViewModel,
                 onNavigateToProducts = { navController.navigate(Screen.Products.route) },
                 onNavigateToAddProduct = { navController.navigate(Screen.AddProduct.route) },
-                onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
                 userName = userName
             )
         }
