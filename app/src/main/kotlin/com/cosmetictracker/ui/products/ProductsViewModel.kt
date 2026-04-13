@@ -188,6 +188,14 @@ class ProductsViewModel(
         return ProductStats(total, active, expiringSoon)
     }
 
+    fun getProductById(id: String): UserProduct? {
+        val state = _uiState.value
+        if (state is ProductsUiState.Success) {
+            return state.products.find { it.id == id }
+        }
+        return null
+    }
+
     suspend fun getProductDetailsFromBarcode(barcode: String): com.cosmetictracker.data.remote.ObfProductData? {
         val result = productRepository.getProductByBarcode(barcode)
         return result.getOrNull()

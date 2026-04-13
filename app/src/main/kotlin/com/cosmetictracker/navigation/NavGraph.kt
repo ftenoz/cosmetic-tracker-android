@@ -22,6 +22,9 @@ sealed class Screen(val route: String) {
     object Products : Screen("products")
     object AddProduct : Screen("add_product")
     object Profile : Screen("profile")
+    object ProductDetail : Screen("product_detail/{productId}") {
+        fun createRoute(productId: String) = "product_detail/$productId"
+    }
 }
 
 @Composable
@@ -79,7 +82,8 @@ fun NavGraph(
                 viewModel = productsViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToAddProduct = { navController.navigate(Screen.AddProduct.route) },
-                onNavigateToEditProduct = { /* TODO */ }
+                onNavigateToEditProduct = { /* TODO */ },
+                onNavigateToProductDetail = { id -> navController.navigate(Screen.ProductDetail.createRoute(id)) }
             )
         }
 
@@ -91,6 +95,16 @@ fun NavGraph(
                     navController.popBackStack()
                     productsViewModel.loadProducts()
                 }
+            )
+        }
+
+        composable(Screen.ProductDetail.route) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: return@composable
+            com.cosmetictracker.ui.products.ProductDetailScreen(
+                productId = productId,
+                viewModel = productsViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEdit = { id -> /* TODO: Route to EditProductScreen */ }
             )
         }
 

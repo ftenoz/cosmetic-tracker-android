@@ -29,7 +29,8 @@ fun ProductsScreen(
     viewModel: ProductsViewModel,
     onNavigateBack: () -> Unit,
     onNavigateToAddProduct: () -> Unit,
-    onNavigateToEditProduct: (String) -> Unit
+    onNavigateToEditProduct: (String) -> Unit,
+    onNavigateToProductDetail: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -79,6 +80,7 @@ fun ProductsScreen(
                         products = state.products,
                         viewModel = viewModel,
                         onNavigateToEditProduct = onNavigateToEditProduct,
+                        onNavigateToProductDetail = onNavigateToProductDetail,
                         modifier = Modifier.padding(padding)
                     )
                 }
@@ -106,6 +108,7 @@ fun ProductsList(
     products: List<UserProduct>,
     viewModel: ProductsViewModel,
     onNavigateToEditProduct: (String) -> Unit,
+    onNavigateToProductDetail: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -119,6 +122,7 @@ fun ProductsList(
             ProductCard(
                 product = product,
                 expiryStatus = viewModel.getExpiryStatus(product),
+                onClick = { onNavigateToProductDetail(product.id) },
                 onEdit = { onNavigateToEditProduct(product.id) },
                 onDelete = { viewModel.deleteProduct(product.id) }
             )
@@ -130,13 +134,16 @@ fun ProductsList(
 fun ProductCard(
     product: UserProduct,
     expiryStatus: ExpiryStatus,
+    onClick: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = SurfaceContainerLowest)
     ) {
