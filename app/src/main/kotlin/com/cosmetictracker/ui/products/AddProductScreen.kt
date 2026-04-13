@@ -141,10 +141,10 @@ fun AddProductScreen(
                         IconButton(onClick = onNavigateBack) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                         }
-                    }
-                ),
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
                 )
             }
         ) { padding ->
