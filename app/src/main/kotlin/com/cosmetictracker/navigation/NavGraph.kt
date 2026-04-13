@@ -15,12 +15,21 @@ import com.cosmetictracker.ui.products.ProductsViewModel
 import com.cosmetictracker.ui.profile.ProfileViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import com.cosmetictracker.ui.components.CTBottomNavigation
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Dashboard : Screen("dashboard")
     object Products : Screen("products")
     object AddProduct : Screen("add_product")
+    object Routines : Screen("routines")
     object Profile : Screen("profile")
     object ProductDetail : Screen("product_detail/{productId}") {
         fun createRoute(productId: String) = "product_detail/$productId"
@@ -54,10 +63,16 @@ fun NavGraph(
     val userNameState by application.tokenManager.getUserFirstName().collectAsStateWithLifecycle(initialValue = null)
     val userName = userNameState ?: "User"
 
-    NavHost(
-        navController = navController,
-        startDestination = if (isLoggedIn) Screen.Dashboard.route else Screen.Login.route
-    ) {
+    Scaffold(
+        bottomBar = {
+            CTBottomNavigation(navController = navController)
+        }
+    ) { paddingValues ->
+        NavHost(
+            navController = navController,
+            startDestination = if (isLoggedIn) Screen.Dashboard.route else Screen.Login.route,
+            modifier = Modifier.padding(paddingValues)
+        ) {
         composable(Screen.Login.route) {
             LoginScreen(
                 viewModel = loginViewModel,
@@ -136,6 +151,15 @@ fun NavGraph(
                     }
                 }
             )
+        }
+
+        composable(Screen.Routines.route) {
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Routines Coming Soon", style = MaterialTheme.typography.titleLarge)
+            }
         }
     }
 }
