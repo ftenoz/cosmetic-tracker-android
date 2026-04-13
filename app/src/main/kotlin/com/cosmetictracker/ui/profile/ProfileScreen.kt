@@ -257,7 +257,7 @@ fun ProfileScreen(
                 ) {
                     Text(
                         text = "Exit Sanctuary",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
