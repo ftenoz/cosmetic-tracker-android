@@ -8,8 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.cosmetictracker.ui.theme.Primary
-import com.cosmetictracker.ui.theme.PrimaryContainer
 
 @Composable
 fun CTButton(
@@ -27,8 +25,8 @@ fun CTButton(
         enabled = enabled && !isLoading,
         shape = RoundedCornerShape(28.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Primary,
-            contentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
         if (isLoading) {
@@ -61,7 +59,7 @@ fun CTSecondaryButton(
         enabled = enabled,
         shape = RoundedCornerShape(28.dp),
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = Primary
+            contentColor = MaterialTheme.colorScheme.primary
         )
     ) {
         Text(

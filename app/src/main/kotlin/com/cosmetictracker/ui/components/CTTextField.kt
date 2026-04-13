@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.cosmetictracker.ui.theme.SurfaceContainerLow
-import com.cosmetictracker.ui.theme.SurfaceContainerLowest
 
 @Composable
 fun CTTextField(
@@ -38,8 +36,10 @@ fun CTTextField(
         trailingIcon = trailingIcon,
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedContainerColor = SurfaceContainerLow,
-            focusedContainerColor = SurfaceContainerLowest
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.15f),
+            focusedBorderColor = MaterialTheme.colorScheme.secondary
         )
     )
 }

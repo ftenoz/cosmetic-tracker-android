@@ -14,13 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.cosmetictracker.data.model.ExpiryStatus
 import com.cosmetictracker.data.model.UserProduct
-import com.cosmetictracker.ui.theme.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -38,7 +35,7 @@ fun ProductDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Product Details") },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -52,14 +49,15 @@ fun ProductDetailScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Background
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
         if (product == null) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                Text("Product not found.", color = MaterialTheme.colorScheme.error)
+                Text("Item not found.", color = MaterialTheme.colorScheme.error)
             }
         } else {
             val expiryStatus = viewModel.getExpiryStatus(product)
@@ -81,76 +79,63 @@ fun ProductDetailContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Background)
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        // Top Image Section
+        // Image Layer
         if (product.imageUrl != null) {
             AsyncImage(
                 model = product.imageUrl,
                 contentDescription = product.product?.name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(280.dp)
-                    .clip(RoundedCornerShape(24.dp)),
+                    .height(360.dp)
+                    .clip(RoundedCornerShape(32.dp)),
                 contentScale = ContentScale.Crop
             )
         } else {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(280.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(SurfaceContainerLowest),
+                    .height(360.dp)
+                    .clip(RoundedCornerShape(32.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerLow),
                 contentAlignment = Alignment.Center
             ) {
-                Text("💄", style = MaterialTheme.typography.displayLarge.copy(fontSize = 72.sp))
+                Text("✨", style = MaterialTheme.typography.displayLarge)
             }
         }
 
-        // Header Section (Brand + Product Name)
+        // Editorial Header
         Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
             Text(
                 text = product.product?.brand?.name ?: "Unknown Brand",
-                style = MaterialTheme.typography.titleMedium,
-                color = Primary,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = product.product?.name ?: "Unknown Product",
-                style = MaterialTheme.typography.headlineMedium,
-                color = OnBackground,
-                fontWeight = FontWeight.Bold,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
-        // Status Badge
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            StatusBadge(status = expiryStatus)
-        }
+        StatusBadge(status = expiryStatus)
 
-        // Expiry Tracker Card
         ExpiryTrackerCard(product = product)
 
-        // Details Information Card
         DetailsCard(product = product)
 
-        // Notes Card
         if (!product.notes.isNullOrBlank()) {
             NotesCard(notes = product.notes)
         }
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(56.dp))
     }
 }
 
@@ -158,16 +143,17 @@ fun ProductDetailContent(
 fun ExpiryTrackerCard(product: UserProduct) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceContainerLowest)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(32.dp)) {
             Text(
-                text = "Lifecycle",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                text = "LIFECYCLE",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             val openedAt = product.openedAt
             val paoMonths = product.product?.paoMonths
@@ -192,30 +178,29 @@ fun ExpiryTrackerCard(product: UserProduct) {
                         Text(
                             text = if (remainingMonths > 0) "$remainingMonths mos left" else "Expired",
                             style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = if (remainingMonths <= 1) Error else Primary
+                            color = if (remainingMonths <= 1) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                         )
                     }
                     
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     
                     LinearProgressIndicator(
                         progress = { progress },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp)),
-                        color = if (progress >= 1f) Error else if (progress >= 0.8f) PrimaryFixed else Primary,
-                        trackColor = SurfaceContainerHighest
+                            .clip(RoundedCornerShape(percent = 50)),
+                        color = if (progress >= 1f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                     )
                 } else {
-                    Text("Invalid Open Date format.", color = Error)
+                    Text("Invalid Open Date format.", color = MaterialTheme.colorScheme.error)
                 }
             } else {
                 Text(
-                    "Not opened yet. Product lifecycle begins when marked as Opened.",
+                    "Not opened yet. Lifecycle begins when marked as Opened.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = OnSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -226,14 +211,15 @@ fun ExpiryTrackerCard(product: UserProduct) {
 fun DetailsCard(product: UserProduct) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceContainerLowest)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(modifier = Modifier.padding(32.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
              Text(
-                text = "Product Info",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                text = "FACTS",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
             DetailRow(label = "Category", value = product.product?.category?.name ?: "Unknown")
@@ -246,7 +232,7 @@ fun DetailsCard(product: UserProduct) {
             if (!product.product?.description.isNullOrBlank()) {
                 DetailRow(label = "Description", value = product.product?.description ?: "")
             }
-            DetailRow(label = "PAO (Period After Opening)", value = "${product.product?.paoMonths ?: "Unknown"} Months")
+            DetailRow(label = "PAO (Period After Opening)", value = "${product.product?.paoMonths ?: "0"} Months")
         }
     }
 }
@@ -254,9 +240,9 @@ fun DetailsCard(product: UserProduct) {
 @Composable
 fun DetailRow(label: String, value: String) {
     Column {
-        Text(text = label, style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
+        Text(text = label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = value, style = MaterialTheme.typography.bodyMedium, color = OnBackground)
+        Text(text = value, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
     }
 }
 
@@ -264,21 +250,21 @@ fun DetailRow(label: String, value: String) {
 fun NotesCard(notes: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = SecondaryContainer)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(32.dp)) {
             Text(
-                text = "Notes",
-                style = MaterialTheme.typography.labelMedium,
-                color = OnSecondaryContainer,
-                fontWeight = FontWeight.Bold
+                text = "YOUR NOTES",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = notes,
-                style = MaterialTheme.typography.bodyMedium,
-                color = OnSecondaryContainer
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
     }

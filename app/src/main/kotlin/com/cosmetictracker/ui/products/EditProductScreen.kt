@@ -28,7 +28,7 @@ import androidx.core.content.FileProvider
 import coil3.compose.AsyncImage
 import com.cosmetictracker.ui.components.CTButton
 import com.cosmetictracker.ui.components.CTTextField
-import com.cosmetictracker.ui.theme.SurfaceContainerLow
+
 import java.io.File
 import java.time.Instant
 import java.time.LocalDate
@@ -58,6 +58,9 @@ fun EditProductScreen(
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                         }
                     }
+                ),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             }
         ) { padding ->
@@ -151,7 +154,7 @@ fun EditProductScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Editable Info
             Text(
@@ -177,7 +180,7 @@ fun EditProductScreen(
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Surface(modifier = Modifier.fillMaxSize(), color = SurfaceContainerLow) {}
+                    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainerHighest) {}
                 }
             }
 

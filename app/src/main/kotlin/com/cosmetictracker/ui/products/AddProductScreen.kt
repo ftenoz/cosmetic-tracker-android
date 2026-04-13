@@ -34,8 +34,7 @@ import com.cosmetictracker.data.model.Category
 import com.cosmetictracker.ui.components.BarcodeScanner
 import com.cosmetictracker.ui.components.CTButton
 import com.cosmetictracker.ui.components.CTTextField
-import com.cosmetictracker.ui.theme.SurfaceContainerLow
-import com.cosmetictracker.ui.theme.SurfaceContainerLowest
+
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.Instant
@@ -143,6 +142,9 @@ fun AddProductScreen(
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                         }
                     }
+                ),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             }
         ) { padding ->
@@ -184,8 +186,8 @@ fun AddProductScreen(
                             modifier = Modifier.menuAnchor().fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = SurfaceContainerLow,
-                                focusedContainerColor = SurfaceContainerLowest
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest
                             ),
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = brandExpanded) }
                         )
@@ -227,8 +229,8 @@ fun AddProductScreen(
                             modifier = Modifier.menuAnchor().fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = SurfaceContainerLow,
-                                focusedContainerColor = SurfaceContainerLowest
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest
                             ),
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) }
                         )
@@ -279,8 +281,8 @@ fun AddProductScreen(
                         shape = RoundedCornerShape(12.dp),
                         trailingIcon = { Text("months", modifier = Modifier.padding(end = 16.dp), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = SurfaceContainerLow,
-                            focusedContainerColor = SurfaceContainerLowest
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest
                         )
                     )
                 }
@@ -294,7 +296,7 @@ fun AddProductScreen(
                     maxLines = 4
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // =============== YOUR PRODUCT INFO ===============
                 Text(
@@ -320,7 +322,7 @@ fun AddProductScreen(
                             contentScale = ContentScale.Crop
                         )
                     } else {
-                        Surface(modifier = Modifier.fillMaxSize(), color = SurfaceContainerLow) {}
+                        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainerHighest) {}
                     }
                 }
 

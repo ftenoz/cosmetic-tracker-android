@@ -11,14 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cosmetictracker.data.model.ProductStats
 import com.cosmetictracker.ui.products.ProductsUiState
 import com.cosmetictracker.ui.products.ProductsViewModel
-import com.cosmetictracker.ui.theme.*
 
 @Composable
 fun DashboardScreen(
@@ -30,7 +30,6 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Load products when dashboard opens
     androidx.compose.runtime.LaunchedEffect(Unit) {
         viewModel.loadProducts()
     }
@@ -38,10 +37,10 @@ fun DashboardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background) // f9f9ff
+            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 24.dp)
     ) {
-        Spacer(modifier = Modifier.height(40.dp)) // Generous top spacing
+        Spacer(modifier = Modifier.height(56.dp)) 
 
         // Header - Editorial style
         Row(
@@ -55,14 +54,12 @@ fun DashboardScreen(
                     style = MaterialTheme.typography.titleMedium.copy(
                         letterSpacing = 0.01.sp
                     ),
-                    color = OnSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = userName,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        letterSpacing = (-0.02).sp
-                    ),
-                    color = OnBackground
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -70,24 +67,34 @@ fun DashboardScreen(
                 Text(
                     "Profile",
                     style = MaterialTheme.typography.labelLarge,
-                    color = Primary
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(56.dp))
 
         // Stats Cards
         when (val state = uiState) {
             is ProductsUiState.Success -> {
-                StatsCards(stats = state.stats, onNavigateToProducts = onNavigateToProducts)
+                if (state.products.isEmpty()) {
+                    Text(
+                        text = "Your vanity is feeling light.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 32.dp)
+                    )
+                } else {
+                    StatsCards(stats = state.stats, onNavigateToProducts = onNavigateToProducts)
+                }
             }
             is ProductsUiState.Loading -> {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     repeat(3) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp)
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
                         ) {
                             Box(
                                 modifier = Modifier
@@ -104,21 +111,17 @@ fun DashboardScreen(
             is ProductsUiState.Error -> {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = ErrorContainer)
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
                 ) {
                     Column(
                         modifier = Modifier.padding(24.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "Failed to load products",
+                            text = "Failed to load vanity",
                             style = MaterialTheme.typography.titleMedium,
-                            color = OnErrorContainer
-                        )
-                        Text(
-                            text = state.message,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = OnErrorContainer
+                            color = MaterialTheme.colorScheme.onErrorContainer
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         TextButton(
@@ -133,17 +136,18 @@ fun DashboardScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Add Product Button - Gradient pill
+        // Add Product Button - Soft glow pill
         Button(
             onClick = onNavigateToAddProduct,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            shape = RoundedCornerShape(percent = 50), // Pill shape
+            shape = RoundedCornerShape(percent = 50),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Primary,
-                contentColor = OnPrimary
-            )
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp, pressedElevation = 12.dp) // Simulated ambient shadow
         ) {
             Icon(
                 Icons.Default.Add,
@@ -152,14 +156,12 @@ fun DashboardScreen(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                "Add Product",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
-                )
+                "Add to your vanity",
+                style = MaterialTheme.typography.titleMedium
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -168,17 +170,14 @@ fun StatsCards(
     stats: ProductStats,
     onNavigateToProducts: () -> Unit
 ) {
-    // Asymmetric layout - first card large, then two smaller
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        // Large card - Total
         StatCardLarge(
-            title = "TOTAL PRODUCTS",
+            title = "TOTAL ITEMS",
             value = stats.total.toString(),
             subtitle = "in your collection",
             onClick = onNavigateToProducts
         )
 
-        // Two smaller cards
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -186,7 +185,7 @@ fun StatsCards(
             StatCardCompact(
                 title = "ACTIVE",
                 value = stats.active.toString(),
-                backgroundColor = TertiaryFixed,
+                backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
                 modifier = Modifier.weight(1f),
                 onClick = onNavigateToProducts
             )
@@ -194,7 +193,7 @@ fun StatsCards(
             StatCardCompact(
                 title = "EXPIRING",
                 value = stats.expiringSoon.toString(),
-                backgroundColor = PrimaryFixed,
+                backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
                 modifier = Modifier.weight(1f),
                 onClick = onNavigateToProducts
             )
@@ -214,8 +213,8 @@ fun StatCardLarge(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceContainerLowest),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // No drop shadow
     ) {
         Column(
             modifier = Modifier
@@ -224,24 +223,19 @@ fun StatCardLarge(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    letterSpacing = 0.05.sp,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
-                ),
-                color = OnSurfaceVariant
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.displayLarge.copy(
-                    letterSpacing = (-0.02).sp
-                ),
-                color = Primary
+                style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.primary
             )
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium,
-                color = OnSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -266,18 +260,14 @@ fun StatCardCompact(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    letterSpacing = 0.05.sp
-                ),
-                color = OnSurfaceVariant
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.displayMedium.copy(
-                    letterSpacing = (-0.02).sp
-                ),
-                color = Primary
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
