@@ -31,8 +31,7 @@ jobs:
       - name: Sign Android Release
         id: sign_app
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android.jks
-          jarsigner -keystore android.jks -storepass "${{ secrets.KEYSTORE_PASSWORD }}" -keypass "${{ secrets.KEY_PASSWORD }}" app/build/outputs/bundle/release/app-release.aab "${{ secrets.KEY_ALIAS }}"
+          jarsigner -keystore app/keystore.jks -storepass "${{ secrets.KEYSTORE_PASSWORD }}" -keypass "${{ secrets.KEY_PASSWORD }}" app/build/outputs/bundle/release/app-release.aab "${{ secrets.KEY_ALIAS }}"
           echo "signedReleaseFile=app/build/outputs/bundle/release/app-release.aab" >> $GITHUB_OUTPUT
 
       - name: Upload Signed AAB
