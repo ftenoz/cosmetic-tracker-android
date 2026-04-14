@@ -19,6 +19,8 @@ import androidx.navigation.compose.rememberNavController
 import com.cosmetictracker.CosmeticTrackerApplication
 import com.cosmetictracker.ui.auth.LoginScreen
 import com.cosmetictracker.ui.auth.LoginViewModel
+import com.cosmetictracker.ui.auth.RegisterScreen
+import com.cosmetictracker.ui.auth.RegisterViewModel
 import com.cosmetictracker.ui.components.CTBottomNavigation
 import com.cosmetictracker.ui.dashboard.DashboardScreen
 import com.cosmetictracker.ui.products.ProductsViewModel
@@ -51,6 +53,9 @@ fun NavGraph(application: CosmeticTrackerApplication) {
         LoginViewModel(application.authRepository)
     }
 
+    // Navigation state within auth flow
+    var isRegistering by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+
     // Single source of truth for auth state
     val token by application.tokenManager.getToken().collectAsStateWithLifecycle(initialValue = "LOADING")
 
@@ -63,23 +68,37 @@ fun NavGraph(application: CosmeticTrackerApplication) {
         }
 
         token == null -> {
-            // Logged out — show Login screen
-            // resetState ensures stale Success state doesn't auto-redirect
-            loginViewModel.resetState()
-            LoginScreen(
-                viewModel = loginViewModel,
-                onNavigateToRegister = {},
-                onLoginSuccess = {
-                    // Token is already saved to DataStore by LoginViewModel.
-                    // The token flow above will emit the new token and switch
-                    // this composable to the main app automatically — no navController needed.
+            if (isRegistering) {
+                val registerViewModel = androidx.lifecycle.viewmodel.compose.viewModel<RegisterViewModel> {
+                    RegisterViewModel(application.authRepository)
                 }
-            )
+                RegisterScreen(
+                    viewModel = registerViewModel,
+                    onNavigateToLogin = { isRegistering = false },
+                    onRegisterSuccess = {
+                        // Registration automatically saves token and triggers token flow
+                    }
+                )
+            } else {
+                // Logged out — show Login screen
+                // resetState ensures stale Success state doesn't auto-redirect
+                loginViewModel.resetState()
+                LoginScreen(
+                    viewModel = loginViewModel,
+                    onNavigateToRegister = { isRegistering = true },
+                    onLoginSuccess = {
+                        // Token is already saved to DataStore by LoginViewModel.
+                        // The token flow above will emit the new token and switch
+                        // this composable to the main app automatically — no navController needed.
+                    }
+                )
+            }
         }
 
         else -> {
             // Logged in — show main app with its own NavController
-            // Using a separate navController here means it's always fresh on login
+            // Reset local auth navigation for next time
+            isRegistering = false
             MainApp(application = application)
         }
     }
