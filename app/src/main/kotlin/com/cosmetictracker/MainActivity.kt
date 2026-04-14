@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
 import com.cosmetictracker.navigation.NavGraph
 import com.cosmetictracker.ui.theme.CosmeticTrackerTheme
 
@@ -25,11 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    NavGraph(
-                        navController = navController,
-                        application = application
-                    )
+                    NavGraph(application = application)
                 }
             }
         }
