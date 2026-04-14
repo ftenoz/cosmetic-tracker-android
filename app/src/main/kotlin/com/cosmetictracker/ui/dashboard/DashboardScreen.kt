@@ -29,11 +29,10 @@ import com.cosmetictracker.ui.products.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(
-    viewModel: ProductsViewModel,
     onNavigateToProducts: () -> Unit,
     onNavigateToAddProduct: () -> Unit,
-    userName: String
+    userName: String,
+    versionDisplay: String = ""
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -148,6 +147,18 @@ fun DashboardScreen(
                         }
                     }
                 }
+            }
+
+            if (versionDisplay.isNotBlank()) {
+                Text(
+                    text = versionDisplay,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
             }
 
             Spacer(modifier = Modifier.height(100.dp)) // Breathing room for Bottom Nav + FAB
