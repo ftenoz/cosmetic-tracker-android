@@ -57,9 +57,10 @@ fun NavGraph(
         ProfileViewModel(application.authRepository)
     }
 
-    // Check if logged in
-    val isLoggedIn = runBlocking {
-        application.tokenManager.getToken().first() != null
+    // Evaluate login state ONCE at composition - never recompute on recomposition
+    // (NavHost startDestination must not change or it resets the graph)
+    val isLoggedIn = remember {
+        runBlocking { application.tokenManager.getToken().first() != null }
     }
 
     val userNameState by application.tokenManager.getUserFirstName().collectAsStateWithLifecycle(initialValue = null)

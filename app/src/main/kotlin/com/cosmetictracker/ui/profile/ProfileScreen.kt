@@ -50,6 +50,10 @@ fun ProfileScreen(
     var password by remember { mutableStateOf("••••••••••••") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        viewModel.loadProfile()
+    }
+
     LaunchedEffect(uiState.isSuccess, uiState.error) {
         if (uiState.isSuccess) {
             Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
