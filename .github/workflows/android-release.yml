@@ -44,3 +44,4 @@ jobs:
           packageName: com.vela.cosmetictracker
           releaseFiles: ${{steps.sign_app.outputs.signedReleaseFile}}
           track: internal
+          status: draft
