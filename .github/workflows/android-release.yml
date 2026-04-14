@@ -25,13 +25,10 @@ jobs:
         with:
           gradle-version: wrapper
 
-      - name: Build Release AAB
-        run: gradle bundleRelease
-
-      - name: Sign Android Release
+      - name: Build and Sign Release AAB
         id: sign_app
         run: |
-          jarsigner -keystore app/keystore.jks -storepass 'an0605FE#$' app/build/outputs/bundle/release/app-release.aab key0
+          gradle bundleRelease -Pandroid.injected.signing.store.file=${{ github.workspace }}/app/keystore.jks -Pandroid.injected.signing.store.password='an0605FE#$' -Pandroid.injected.signing.key.alias=key0 -Pandroid.injected.signing.key.password='an0605FE#$'
           echo "signedReleaseFile=app/build/outputs/bundle/release/app-release.aab" >> $GITHUB_OUTPUT
 
       - name: Upload Signed AAB
