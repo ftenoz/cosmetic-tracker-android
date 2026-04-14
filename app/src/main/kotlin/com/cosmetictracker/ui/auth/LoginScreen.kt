@@ -24,7 +24,7 @@ fun LoginScreen(
 
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Success) {
-            kotlinx.coroutines.delay(200) // Wait for DataStore flush
+            viewModel.resetState() // Clear state BEFORE navigating to prevent re-trigger on recompose
             onLoginSuccess()
         }
     }
