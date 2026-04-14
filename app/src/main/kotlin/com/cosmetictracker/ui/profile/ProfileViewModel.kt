@@ -72,4 +72,10 @@ class ProfileViewModel(
     fun onStateHandled() {
         _uiState.value = _uiState.value.copy(isSuccess = false, error = null)
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+        }
+    }
 }
