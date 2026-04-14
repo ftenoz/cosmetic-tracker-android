@@ -28,7 +28,7 @@ jobs:
       - name: Build and Sign Release AAB
         id: sign_app
         run: |
-          gradle bundleRelease -Pandroid.injected.signing.store.file=${{ github.workspace }}/app/keystore.jks -Pandroid.injected.signing.store.password='an0605FE#$' -Pandroid.injected.signing.key.alias=key0 -Pandroid.injected.signing.key.password='an0605FE#$'
+          gradle bundleRelease -Pandroid.injected.signing.store.file=${{ github.workspace }}/app/keystore.jks -Pandroid.injected.signing.store.password='Tracker2026' -Pandroid.injected.signing.key.alias=cosmetic -Pandroid.injected.signing.key.password='Tracker2026'
           echo "signedReleaseFile=app/build/outputs/bundle/release/app-release.aab" >> $GITHUB_OUTPUT
 
       - name: Upload Signed AAB
@@ -41,6 +41,6 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-          packageName: com.cosmetictracker
+          packageName: com.vela.cosmetictracker
           releaseFiles: ${{steps.sign_app.outputs.signedReleaseFile}}
           track: internal

@@ -9,7 +9,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.cosmetictracker"
+        applicationId = "com.vela.cosmetictracker"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
