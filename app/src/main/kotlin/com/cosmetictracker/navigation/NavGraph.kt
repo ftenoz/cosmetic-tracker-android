@@ -1,10 +1,9 @@
 package com.cosmetictracker.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +15,7 @@ import com.cosmetictracker.ui.dashboard.DashboardScreen
 import com.cosmetictracker.ui.products.ProductsViewModel
 import com.cosmetictracker.ui.profile.ProfileViewModel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.padding
@@ -65,16 +65,7 @@ fun NavGraph(
     val userNameState by application.tokenManager.getUserFirstName().collectAsStateWithLifecycle(initialValue = null)
     val userName = userNameState ?: "User"
 
-    // Reactively observe token — when it becomes null (logout), navigate to Login
-    val token by application.tokenManager.getToken().collectAsStateWithLifecycle(initialValue = "loading")
-
-    LaunchedEffect(token) {
-        if (token == null) {
-            navController.navigate(Screen.Login.route) {
-                popUpTo(0) { inclusive = true }
-            }
-        }
-    }
+    val coroutineScope = rememberCoroutineScope()
 
     // Hide bottom nav on login screen
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -162,8 +153,12 @@ fun NavGraph(
                 viewModel = profileViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onLogout = {
-                    profileViewModel.logout()
-                    // Navigation happens automatically via token LaunchedEffect above
+                    coroutineScope.launch {
+                        application.authRepository.logout()
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
                 }
             )
         }
