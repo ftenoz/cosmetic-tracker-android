@@ -155,6 +155,7 @@ fun NavGraph(
                 onLogout = {
                     coroutineScope.launch {
                         application.authRepository.logout()
+                        loginViewModel.resetState() // Clear stale Success state
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
