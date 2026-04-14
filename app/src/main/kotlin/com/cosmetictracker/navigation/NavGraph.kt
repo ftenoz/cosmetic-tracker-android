@@ -111,6 +111,7 @@ private fun MainApp(application: CosmeticTrackerApplication) {
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     viewModel = productsViewModel,
+                    onNavigateToProducts = { navController.navigate(Screen.Products.route) },
                     onNavigateToAddProduct = { navController.navigate(Screen.AddProduct.route) },
                     userName = userName,
                     versionDisplay = "v2"

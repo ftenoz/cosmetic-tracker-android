@@ -29,6 +29,8 @@ import com.cosmetictracker.ui.products.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun DashboardScreen(
+    viewModel: ProductsViewModel,
     onNavigateToProducts: () -> Unit,
     onNavigateToAddProduct: () -> Unit,
     userName: String,
