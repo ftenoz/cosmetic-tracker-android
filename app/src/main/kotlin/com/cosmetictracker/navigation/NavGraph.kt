@@ -1,5 +1,6 @@
 package com.cosmetictracker.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -53,6 +54,8 @@ fun NavGraph(application: CosmeticTrackerApplication) {
 
     // Single source of truth for auth state
     val token by application.tokenManager.getToken().collectAsStateWithLifecycle(initialValue = "LOADING")
+
+    Log.d("NavGraph", "Token state: ${when (token) { "LOADING" -> "LOADING"; null -> "NULL (not logged in)"; else -> "PRESENT (${token.take(10)}...)" }}")
 
     when {
         token == "LOADING" -> {
