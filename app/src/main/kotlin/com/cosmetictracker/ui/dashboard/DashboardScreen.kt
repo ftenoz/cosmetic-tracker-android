@@ -37,6 +37,7 @@ import com.cosmetictracker.ui.products.ProductsViewModel
 fun DashboardScreen(
     viewModel: ProductsViewModel,
     onNavigateToProducts: () -> Unit,
+    onNavigateToCurrentlyUsing: () -> Unit,
     onNavigateToAddProduct: () -> Unit,
     userName: String,
     versionDisplay: String = ""
@@ -99,7 +100,11 @@ fun DashboardScreen(
                     if (state.products.isEmpty()) {
                         EmptyVanityCard(onAdd = onNavigateToAddProduct)
                     } else {
-                        StatsCardsVertically(stats = state.stats, onNavigateToProducts = onNavigateToProducts)
+                    StatsCardsVertically(
+                        stats = state.stats,
+                        onNavigateToProducts = onNavigateToProducts,
+                        onNavigateToCurrentlyUsing = onNavigateToCurrentlyUsing
+                    )
                         
                         Spacer(modifier = Modifier.height(48.dp))
                         
@@ -157,7 +162,11 @@ fun DashboardScreen(
 }
 
 @Composable
-fun StatsCardsVertically(stats: ProductStats, onNavigateToProducts: () -> Unit) {
+fun StatsCardsVertically(
+    stats: ProductStats,
+    onNavigateToProducts: () -> Unit,
+    onNavigateToCurrentlyUsing: () -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         StatCard(
             title = "YOUR VANITY",
@@ -172,7 +181,7 @@ fun StatsCardsVertically(stats: ProductStats, onNavigateToProducts: () -> Unit) 
             value = stats.currentlyUsing.toString(),
             icon = Icons.Default.Spa,
             bgColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            onClick = onNavigateToProducts
+            onClick = onNavigateToCurrentlyUsing
         )
 
         StatCard(

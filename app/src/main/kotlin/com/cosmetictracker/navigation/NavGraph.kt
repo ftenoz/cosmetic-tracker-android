@@ -16,9 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.cosmetictracker.CosmeticTrackerApplication
 import com.cosmetictracker.ui.auth.LoginScreen
 import com.cosmetictracker.ui.auth.LoginViewModel
@@ -33,7 +35,10 @@ import kotlinx.coroutines.launch
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Dashboard : Screen("dashboard")
-    object Products : Screen("products")
+    object Products : Screen("products?filterOpened={filterOpened}") {
+        fun allProducts() = "products?filterOpened=false"
+        fun currentlyUsing() = "products?filterOpened=true"
+    }
     object AddProduct : Screen("add_product")
     object Routines : Screen("routines")
     object Profile : Screen("profile")
@@ -133,16 +138,27 @@ private fun MainApp(application: CosmeticTrackerApplication) {
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     viewModel = productsViewModel,
-                    onNavigateToProducts = { navController.navigate(Screen.Products.route) },
+                    onNavigateToProducts = { navController.navigate(Screen.Products.allProducts()) },
+                    onNavigateToCurrentlyUsing = { navController.navigate(Screen.Products.currentlyUsing()) },
                     onNavigateToAddProduct = { navController.navigate(Screen.AddProduct.route) },
                     userName = userName,
                     versionDisplay = "v2"
                 )
             }
 
-            composable(Screen.Products.route) {
+            composable(
+                route = Screen.Products.route,
+                arguments = listOf(
+                    navArgument("filterOpened") {
+                        type = NavType.BoolType
+                        defaultValue = false
+                    }
+                )
+            ) { backStackEntry ->
+                val filterOpened = backStackEntry.arguments?.getBoolean("filterOpened") ?: false
                 com.cosmetictracker.ui.products.ProductsScreen(
                     viewModel = productsViewModel,
+                    filterOpenedOnly = filterOpened,
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToAddProduct = { navController.navigate(Screen.AddProduct.route) },
                     onNavigateToEditProduct = { id -> navController.navigate(Screen.EditProduct.createRoute(id)) },

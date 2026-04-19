@@ -27,6 +27,7 @@ import com.cosmetictracker.data.model.UserProduct
 @Composable
 fun ProductsScreen(
     viewModel: ProductsViewModel,
+    filterOpenedOnly: Boolean = false,
     onNavigateBack: () -> Unit,
     onNavigateToAddProduct: () -> Unit,
     onNavigateToEditProduct: (String) -> Unit,
@@ -39,7 +40,7 @@ fun ProductsScreen(
             TopAppBar(
                 title = { 
                     Text(
-                        "Your Vanity",
+                        if (filterOpenedOnly) "Currently Using" else "Your Vanity",
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     ) 
@@ -80,14 +81,21 @@ fun ProductsScreen(
             }
 
             is ProductsUiState.Success -> {
-                if (state.products.isEmpty()) {
+                val filteredProducts = if (filterOpenedOnly) {
+                    state.products.filter { it.openedAt != null }
+                } else {
+                    state.products
+                }
+
+                if (filteredProducts.isEmpty()) {
                     EmptyState(
                         onNavigateToAddProduct = onNavigateToAddProduct,
+                        isFiltered = filterOpenedOnly,
                         modifier = Modifier.padding(padding)
                     )
                 } else {
                     ProductsList(
-                        products = state.products,
+                        products = filteredProducts,
                         viewModel = viewModel,
                         onNavigateToEditProduct = onNavigateToEditProduct,
                         onNavigateToProductDetail = onNavigateToProductDetail,
@@ -304,6 +312,7 @@ fun StatusBadge(status: ExpiryStatus) {
 @Composable
 fun EmptyState(
     onNavigateToAddProduct: () -> Unit,
+    isFiltered: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -315,15 +324,17 @@ fun EmptyState(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Your vanity is feeling light.",
+            text = if (isFiltered) "No products opened yet." else "Your vanity is feeling light.",
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Start adding products to track their lifecycle.",
+            text = if (isFiltered) "Open a product and set the date to see it here." else "Start adding products to track their lifecycle.",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
