@@ -160,8 +160,8 @@ fun StatsCardsVertically(stats: ProductStats, onNavigateToProducts: () -> Unit) 
         )
 
         StatCard(
-            title = "YOUR ESSENTIALS",
-            value = stats.active.toString(),
+            title = "CURRENTLY USING",
+            value = stats.currentlyUsing.toString(),
             icon = Icons.Default.Spa,
             bgColor = MaterialTheme.colorScheme.surfaceContainerLow,
             onClick = onNavigateToProducts

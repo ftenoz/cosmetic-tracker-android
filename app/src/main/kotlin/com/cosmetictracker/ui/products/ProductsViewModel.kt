@@ -221,11 +221,11 @@ class ProductsViewModel(
 
     private fun calculateStats(products: List<UserProduct>): ProductStats {
         val total = products.size
-        val active = products.count { it.openedAt != null && !it.isArchived }
+        val currentlyUsing = products.count { it.openedAt != null && !it.isArchived }
         val expiringSoon = products.count { 
             getExpiryStatus(it) == ExpiryStatus.EXPIRING
         }
-        return ProductStats(total, active, expiringSoon)
+        return ProductStats(total, currentlyUsing, expiringSoon)
     }
 
     fun getProductById(id: String): UserProduct? {

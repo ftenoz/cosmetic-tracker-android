@@ -133,7 +133,7 @@ data class BarcodeProduct(
 // UI Models
 data class ProductStats(
     val total: Int = 0,
-    val active: Int = 0,
+    val currentlyUsing: Int = 0,
     val expiringSoon: Int = 0
 )
 
