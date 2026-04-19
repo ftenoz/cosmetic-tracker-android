@@ -78,7 +78,7 @@ fun DashboardScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Your beauty, in order",
+                text = "Your vanity, at a glance",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
