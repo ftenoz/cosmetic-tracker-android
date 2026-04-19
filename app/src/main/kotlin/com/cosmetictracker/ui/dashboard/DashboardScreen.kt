@@ -252,8 +252,8 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
                 label = "featherFloat"
             )
             val rotation by infiniteTransition.animateFloat(
-                initialValue = -8f,
-                targetValue = 8f,
+                initialValue = 20f,
+                targetValue = 30f,
                 animationSpec = infiniteRepeatable(
                     animation = tween(durationMillis = 2400, easing = FastOutSlowInEasing),
                     repeatMode = RepeatMode.Reverse
