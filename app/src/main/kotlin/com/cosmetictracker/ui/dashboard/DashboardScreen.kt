@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -272,7 +271,10 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
                     style = MaterialTheme.typography.displayLarge,
                     modifier = Modifier
                         .offset(y = offsetY.dp)
-                        .rotate(rotation)
+                        .graphicsLayer {
+                            scaleY = -1f
+                            rotationZ = rotation
+                        }
                 )
             }
 
