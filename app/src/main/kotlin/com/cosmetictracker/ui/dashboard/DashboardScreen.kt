@@ -12,11 +12,18 @@ import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -232,7 +239,27 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Placeholder Image equivalent
+            // Floating feather animation
+            val infiniteTransition = rememberInfiniteTransition(label = "feather")
+            val offsetY by infiniteTransition.animateFloat(
+                initialValue = 0f,
+                targetValue = -12f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis = 1800, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "featherFloat"
+            )
+            val rotation by infiniteTransition.animateFloat(
+                initialValue = -8f,
+                targetValue = 8f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis = 2400, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "featherRotation"
+            )
+
             Box(
                 modifier = Modifier
                     .size(160.dp)
@@ -240,7 +267,13 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
                     .background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center
             ) {
-                Text("🪶", style = MaterialTheme.typography.displayLarge)
+                Text(
+                    text = "🪶",
+                    style = MaterialTheme.typography.displayLarge,
+                    modifier = Modifier
+                        .offset(y = offsetY.dp)
+                        .rotate(rotation)
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
