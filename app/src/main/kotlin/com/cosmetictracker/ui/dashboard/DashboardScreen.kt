@@ -240,7 +240,7 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
                     .background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center
             ) {
-                Text("✨", style = MaterialTheme.typography.displayLarge)
+                Text("🪶", style = MaterialTheme.typography.displayLarge)
             }
 
             Spacer(modifier = Modifier.height(32.dp))
