@@ -134,7 +134,8 @@ data class BarcodeProduct(
 data class ProductStats(
     val total: Int = 0,
     val currentlyUsing: Int = 0,
-    val expiringSoon: Int = 0
+    val expiringSoon: Int = 0,
+    val expired: Int = 0
 )
 
 enum class ExpiryStatus {

@@ -225,7 +225,10 @@ class ProductsViewModel(
         val expiringSoon = products.count { 
             getExpiryStatus(it) == ExpiryStatus.EXPIRING
         }
-        return ProductStats(total, currentlyUsing, expiringSoon)
+        val expired = products.count { 
+            getExpiryStatus(it) == ExpiryStatus.EXPIRED
+        }
+        return ProductStats(total, currentlyUsing, expiringSoon, expired)
     }
 
     fun getProductById(id: String): UserProduct? {

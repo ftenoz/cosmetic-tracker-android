@@ -38,6 +38,8 @@ fun DashboardScreen(
     viewModel: ProductsViewModel,
     onNavigateToProducts: () -> Unit,
     onNavigateToCurrentlyUsing: () -> Unit,
+    onNavigateToExpiringSoon: () -> Unit,
+    onNavigateToExpired: () -> Unit,
     onNavigateToAddProduct: () -> Unit,
     userName: String,
     versionDisplay: String = ""
@@ -103,7 +105,9 @@ fun DashboardScreen(
                     StatsCardsVertically(
                         stats = state.stats,
                         onNavigateToProducts = onNavigateToProducts,
-                        onNavigateToCurrentlyUsing = onNavigateToCurrentlyUsing
+                        onNavigateToCurrentlyUsing = onNavigateToCurrentlyUsing,
+                        onNavigateToExpiringSoon = onNavigateToExpiringSoon,
+                        onNavigateToExpired = onNavigateToExpired
                     )
                         
                         Spacer(modifier = Modifier.height(48.dp))
@@ -165,7 +169,9 @@ fun DashboardScreen(
 fun StatsCardsVertically(
     stats: ProductStats,
     onNavigateToProducts: () -> Unit,
-    onNavigateToCurrentlyUsing: () -> Unit
+    onNavigateToCurrentlyUsing: () -> Unit,
+    onNavigateToExpiringSoon: () -> Unit,
+    onNavigateToExpired: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         StatCard(
@@ -189,7 +195,15 @@ fun StatsCardsVertically(
             value = stats.expiringSoon.toString(),
             icon = Icons.Default.Schedule,
             bgColor = MaterialTheme.colorScheme.secondaryContainer,
-            onClick = onNavigateToProducts
+            onClick = onNavigateToExpiringSoon
+        )
+
+        StatCard(
+            title = "EXPIRED PRODUCTS",
+            value = stats.expired.toString(),
+            icon = Icons.Default.Delete,
+            bgColor = MaterialTheme.colorScheme.errorContainer,
+            onClick = onNavigateToExpired
         )
     }
 }
