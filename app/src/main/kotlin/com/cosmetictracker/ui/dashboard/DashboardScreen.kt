@@ -266,8 +266,8 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
             Button(
                 onClick = onAdd,
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(80.dp),
+                    .width(240.dp)
+                    .height(56.dp),
                 shape = RoundedCornerShape(percent = 50),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.onSurface,
@@ -277,7 +277,7 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                     Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("ADD\nTO YOUR\nVANITY", style = MaterialTheme.typography.labelSmall, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                    Text("ADD TO YOUR VANITY", style = MaterialTheme.typography.labelSmall, maxLines = 1)
                 }
             }
         }
