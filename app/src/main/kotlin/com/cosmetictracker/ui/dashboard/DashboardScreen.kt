@@ -4,22 +4,28 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +38,9 @@ import com.cosmetictracker.ui.products.ProductsViewModel
 fun DashboardScreen(
     viewModel: ProductsViewModel,
     onNavigateToProducts: () -> Unit,
+    onNavigateToCurrentlyUsing: () -> Unit,
+    onNavigateToExpiringSoon: () -> Unit,
+    onNavigateToExpired: () -> Unit,
     onNavigateToAddProduct: () -> Unit,
     userName: String,
     versionDisplay: String = ""
@@ -46,23 +55,6 @@ fun DashboardScreen(
         topBar = {
             TopAppBar(
                 title = { },
-                navigationIcon = {
-                    IconButton(onClick = { /* TODO: Open drawer */ }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
-                    }
-                },
-                actions = {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 16.dp)
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Person, contentDescription = "Avatar", tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -98,7 +90,7 @@ fun DashboardScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Your beauty, in order",
+                text = "Your vanity, at a glance",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -111,7 +103,13 @@ fun DashboardScreen(
                     if (state.products.isEmpty()) {
                         EmptyVanityCard(onAdd = onNavigateToAddProduct)
                     } else {
-                        StatsCardsVertically(stats = state.stats, onNavigateToProducts = onNavigateToProducts)
+                    StatsCardsVertically(
+                        stats = state.stats,
+                        onNavigateToProducts = onNavigateToProducts,
+                        onNavigateToCurrentlyUsing = onNavigateToCurrentlyUsing,
+                        onNavigateToExpiringSoon = onNavigateToExpiringSoon,
+                        onNavigateToExpired = onNavigateToExpired
+                    )
                         
                         Spacer(modifier = Modifier.height(48.dp))
                         
@@ -169,7 +167,13 @@ fun DashboardScreen(
 }
 
 @Composable
-fun StatsCardsVertically(stats: ProductStats, onNavigateToProducts: () -> Unit) {
+fun StatsCardsVertically(
+    stats: ProductStats,
+    onNavigateToProducts: () -> Unit,
+    onNavigateToCurrentlyUsing: () -> Unit,
+    onNavigateToExpiringSoon: () -> Unit,
+    onNavigateToExpired: () -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         StatCard(
             title = "YOUR VANITY",
@@ -180,11 +184,11 @@ fun StatsCardsVertically(stats: ProductStats, onNavigateToProducts: () -> Unit) 
         )
 
         StatCard(
-            title = "YOUR ESSENTIALS",
-            value = stats.active.toString(),
+            title = "CURRENTLY USING",
+            value = stats.currentlyUsing.toString(),
             icon = Icons.Default.Spa,
             bgColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            onClick = onNavigateToProducts
+            onClick = onNavigateToCurrentlyUsing
         )
 
         StatCard(
@@ -192,7 +196,15 @@ fun StatsCardsVertically(stats: ProductStats, onNavigateToProducts: () -> Unit) 
             value = stats.expiringSoon.toString(),
             icon = Icons.Default.Schedule,
             bgColor = MaterialTheme.colorScheme.secondaryContainer,
-            onClick = onNavigateToProducts
+            onClick = onNavigateToExpiringSoon
+        )
+
+        StatCard(
+            title = "EXPIRED PRODUCTS",
+            value = stats.expired.toString(),
+            icon = Icons.Default.Delete,
+            bgColor = MaterialTheme.colorScheme.errorContainer,
+            onClick = onNavigateToExpired
         )
     }
 }
@@ -252,7 +264,27 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Placeholder Image equivalent
+            // Floating feather animation
+            val infiniteTransition = rememberInfiniteTransition(label = "feather")
+            val offsetY by infiniteTransition.animateFloat(
+                initialValue = 0f,
+                targetValue = -12f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis = 1800, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "featherFloat"
+            )
+            val rotation by infiniteTransition.animateFloat(
+                initialValue = 290f,
+                targetValue = 300f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis = 2400, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "featherRotation"
+            )
+
             Box(
                 modifier = Modifier
                     .size(160.dp)
@@ -260,7 +292,14 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
                     .background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center
             ) {
-                Text("✨", style = MaterialTheme.typography.displayLarge)
+                Text(
+                    text = "🪶",
+                    style = MaterialTheme.typography.displayLarge,
+                    modifier = Modifier
+                        .offset(y = offsetY.dp)
+                        .scale(scaleX = 1f, scaleY = -1f)
+                        .rotate(rotation)
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -286,8 +325,8 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
             Button(
                 onClick = onAdd,
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(80.dp),
+                    .width(240.dp)
+                    .height(56.dp),
                 shape = RoundedCornerShape(percent = 50),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.onSurface,
@@ -297,7 +336,7 @@ fun EmptyVanityCard(onAdd: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                     Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("ADD\nTO YOUR\nVANITY", style = MaterialTheme.typography.labelSmall, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                    Text("ADD TO YOUR VANITY", style = MaterialTheme.typography.labelSmall, maxLines = 1)
                 }
             }
         }

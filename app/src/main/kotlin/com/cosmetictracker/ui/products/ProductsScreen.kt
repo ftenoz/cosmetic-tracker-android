@@ -27,6 +27,7 @@ import com.cosmetictracker.data.model.UserProduct
 @Composable
 fun ProductsScreen(
     viewModel: ProductsViewModel,
+    filter: String = "all",
     onNavigateBack: () -> Unit,
     onNavigateToAddProduct: () -> Unit,
     onNavigateToEditProduct: (String) -> Unit,
@@ -39,7 +40,12 @@ fun ProductsScreen(
             TopAppBar(
                 title = { 
                     Text(
-                        "Your Vanity",
+                        when (filter) {
+                            "using" -> "Currently Using"
+                            "expiring" -> "Expiring Soon"
+                            "expired" -> "Expired Products"
+                            else -> "Your Vanity"
+                        },
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     ) 
@@ -80,14 +86,22 @@ fun ProductsScreen(
             }
 
             is ProductsUiState.Success -> {
-                if (state.products.isEmpty()) {
+                val filteredProducts = when (filter) {
+                    "using" -> state.products.filter { it.openedAt != null }
+                    "expiring" -> state.products.filter { viewModel.getExpiryStatus(it) == ExpiryStatus.EXPIRING }
+                    "expired" -> state.products.filter { viewModel.getExpiryStatus(it) == ExpiryStatus.EXPIRED }
+                    else -> state.products
+                }
+
+                if (filteredProducts.isEmpty()) {
                     EmptyState(
                         onNavigateToAddProduct = onNavigateToAddProduct,
+                        filterType = filter,
                         modifier = Modifier.padding(padding)
                     )
                 } else {
                     ProductsList(
-                        products = state.products,
+                        products = filteredProducts,
                         viewModel = viewModel,
                         onNavigateToEditProduct = onNavigateToEditProduct,
                         onNavigateToProductDetail = onNavigateToProductDetail,
@@ -304,6 +318,7 @@ fun StatusBadge(status: ExpiryStatus) {
 @Composable
 fun EmptyState(
     onNavigateToAddProduct: () -> Unit,
+    filterType: String = "all",
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -315,15 +330,27 @@ fun EmptyState(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Your vanity is feeling light.",
+            text = when (filterType) {
+                "using" -> "No products opened yet."
+                "expiring" -> "Great! Nothing is expiring soon."
+                "expired" -> "Clean shelf! No expired products."
+                else -> "Your vanity is feeling light."
+            },
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Start adding products to track their lifecycle.",
+            text = when (filterType) {
+                "using" -> "Open a product and set the date to see it here."
+                "expiring" -> "Enjoy your fresh collection."
+                "expired" -> "Everything on your shelf is fresh."
+                else -> "Start adding products to track their lifecycle."
+            },
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
